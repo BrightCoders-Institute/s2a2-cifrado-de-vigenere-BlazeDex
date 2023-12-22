@@ -1,6 +1,19 @@
 # frozen_string_literal: true
 
-# Clase CipherWord, toma una palabra para cifrarla en Vigenere
+# Clase Input, recibe la entrada de la palabra y la clave para posteriormente verificar si es válida.
+class Input
+  def self.get_valid_input(prompt, validation)
+    loop do
+      puts prompt
+      input = gets.chomp.upcase
+      return input if validation.call(input)
+
+      puts 'Entrada no válida. Inténtelo de nuevo, por favor.'
+    end
+  end
+end
+
+# Clase CipherWord, toma una palabra para cifrarla en Vigenere.
 class CipherWord
   attr_accessor :word, :key
 
@@ -11,9 +24,9 @@ class CipherWord
                 T U V W X
                 Y Z].freeze
 
-  def initialize
-    @word = input_with_validation('Ingrese la palabra a cifrar (solo letras): ')
-    @key = input_with_validation('Ingrese la palabra clave (solo letras): ')
+  def initialize(word, key)
+    @word = word
+    @key = key
   end
 
   def repeat_key
@@ -32,20 +45,6 @@ class CipherWord
 
   private
 
-  def valid_input?(text)
-    text.upcase.chars.all? { |char| ALPHABET.include?(char) }
-  end
-
-  def input_with_validation(prompt)
-    loop do
-      puts prompt
-      input = gets.chomp.upcase
-      return input if valid_input?(input)
-
-      puts 'Entrada no válida. Inténtelo de nuevo.'
-    end
-  end
-
   def encrypt_char(char, key_char)
     if ALPHABET.include?(char)
 
@@ -60,5 +59,15 @@ class CipherWord
   end
 end
 
-a = CipherWord.new
-puts a.encrypt
+# Clase principal VigenereApp, toma las clases Input y CipherWord para poder ejecutarse en consola.
+class VigenereApp
+  def self.run
+    word = Input.get_valid_input('Ingrese la palabra a cifrar: ', ->(input) { input.match?(/\A[A-Za-z]+\z/) })
+    key = Input.get_valid_input('Ingrese la palabra clave: ', ->(input) { input.match?(/\A[A-Za-z]+\z/) })
+
+    cipher = CipherWord.new(word, key)
+    puts "Texto cifrado: #{cipher.encrypt}"
+  end
+end
+
+VigenereApp.run
