@@ -25,7 +25,7 @@ class CipherWord
   def encrypt
     cipher_text = ''
     repeat_key.chars.each_with_index do |key_char, index|
-      cipher_text += encrypt_char(word[index], key_char)
+      cipher_text += encrypt_char(@word[index], key_char)
     end
     cipher_text
   end
@@ -33,15 +33,14 @@ class CipherWord
   private
 
   def encrypt_char(char, key_char)
-    if ALPHABET.include?(char)
+    return char unless ALPHABET.include?(char)
 
-      char_index = ALPHABET.index(char)
-      key_index = ALPHABET.index(key_char)
+    char_index = ALPHABET.index(char)
+    key_index = ALPHABET.index(key_char)
 
-      encrypted_char_index = (char_index + key_index) % ALPHABET.length
-      ALPHABET[encrypted_char_index]
-    else
-      char
-    end
+    encrypted_char_index = (char_index + key_index) % ALPHABET.length
+    encrypted_char_index = (encrypted_char_index + ALPHABET.length) % ALPHABET.length
+
+    ALPHABET[encrypted_char_index]
   end
 end
